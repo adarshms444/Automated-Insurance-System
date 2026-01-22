@@ -13,10 +13,7 @@ st.set_page_config(page_title="SurakshaConnect PoC", page_icon="🛡️", layout
 # ==========================================
 # PASTE YOUR KEYS HERE
 # ==========================================
-GEMINI_KEY = "AIzaSyDTxRXlPKGvAZbU-1KhZT-gwMfxM2HY4v4"
-DEEPGRAM_KEY = "0d1a4eeb2aa059e5cbfdff8f4b20cc584b0ca2ce"
-PINECONE_KEY = "pcsk_33Qwd9_4tAV4eLWQoeyX2WHKWSNPk816ApLbLY9LfJJwVzMQdLPxPKPJbKw7BafcRnoRMw"
-INDEX_NAME = "suraksha-index"
+
 
 # Session State
 if "chat_history" not in st.session_state:
@@ -174,3 +171,4 @@ else:
                     # 4. Refresh to show chat
 
                     st.rerun()
+
