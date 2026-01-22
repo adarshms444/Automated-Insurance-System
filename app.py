@@ -2,18 +2,34 @@ import streamlit as st
 import os
 import time
 import warnings
+from dotenv import load_dotenv # Import dotenv
 from logic import SurakshaBrain
 from styles import apply_custom_styles
-# Removed gTTS import as requested
 
 # --- SETUP ---
+load_dotenv() # Load variables from .env file
+
 warnings.filterwarnings("ignore")
 st.set_page_config(page_title="SurakshaConnect PoC", page_icon="🛡️", layout="wide")
 
 # ==========================================
-# PASTE YOUR KEYS HERE
+# SECURE KEY RETRIEVAL
 # ==========================================
+# Try getting from Streamlit Secrets (for Cloud) or os.getenv (for Local .env)
+def get_secret(key_name):
+    if key_name in st.secrets:
+        return st.secrets[key_name]
+    return os.getenv(key_name)
 
+GEMINI_KEY = get_secret("GEMINI_API_KEY")
+DEEPGRAM_KEY = get_secret("DEEPGRAM_API_KEY")
+PINECONE_KEY = get_secret("PINECONE_API_KEY")
+INDEX_NAME = get_secret("PINECONE_INDEX_NAME")
+
+# Basic check to ensure keys exist
+if not all([GEMINI_KEY, DEEPGRAM_KEY, PINECONE_KEY, INDEX_NAME]):
+    st.error("🚨 Missing API Keys! Please configure your .env file or Streamlit Secrets.")
+    st.stop()
 
 # Session State
 if "chat_history" not in st.session_state:
@@ -24,6 +40,7 @@ if "last_audio_id" not in st.session_state:
     st.session_state.last_audio_id = None
 
 try:
+    # Pass the secured keys to your brain class
     brain = SurakshaBrain(GEMINI_KEY, DEEPGRAM_KEY, PINECONE_KEY, INDEX_NAME)
 except Exception as e:
     st.error(f"Init Error: {e}")
@@ -139,19 +156,15 @@ else:
         audio_val = st.audio_input("🔴 Press to Speak / Reply")
         
         if audio_val:
-            # Check if this audio is new (prevents duplication loop)
-            # We use the size of the bytes as a simple signature check or just process it
-            
+            # Check if this audio is new
             with st.spinner("Processing Voice..."):
                 # 1. Transcribe (Returns Text Only)
                 text = brain.transcribe_audio(audio_val.read())
                 
-                # DUPLICATION CHECK: Only append if it's not the exact same as the last user message
-                # (Streamlit sometimes re-sends the same audio on refresh)
+                # DUPLICATION CHECK
                 should_process = True
                 if st.session_state.ivr_history:
                     last_msg = st.session_state.ivr_history[-1]
-                    # If the last message was the AI, we check the one before that (User)
                     if last_msg['role'] == "assistant" and len(st.session_state.ivr_history) >= 2:
                         last_user_msg = st.session_state.ivr_history[-2]['content']
                         if text == last_user_msg:
@@ -169,6 +182,4 @@ else:
                     st.session_state.ivr_history.append({"role": "assistant", "content": response})
                     
                     # 4. Refresh to show chat
-
                     st.rerun()
-
