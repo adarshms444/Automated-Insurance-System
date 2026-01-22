@@ -1,0 +1,8 @@
+streamlit
+google-generativeai
+deepgram-sdk
+python-dotenv
+watchdog
+pinecone
+requests
+gTTS
