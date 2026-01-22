@@ -1,9 +1,21 @@
 import os
 import google.generativeai as genai
 from pinecone import Pinecone, ServerlessSpec
+from dotenv import load_dotenv # Import dotenv
 import time
 
+# --- CONFIGURATION ---
+load_dotenv() # Load variables from .env
 
+# GET KEYS FROM ENVIRONMENT
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+INDEX_NAME = os.getenv("PINECONE_INDEX_NAME")
+
+# Validation
+if not GEMINI_API_KEY or not PINECONE_API_KEY:
+    print("❌ Error: Keys not found in .env file.")
+    exit()
 
 # Configure APIs
 genai.configure(api_key=GEMINI_API_KEY)
@@ -87,5 +99,4 @@ if __name__ == "__main__":
         upload_to_pinecone(docs)
         print("\n🎉 Success! Knowledge Base is updated.")
     else:
-
         print("\n⚠️ No documents found. Check data folder.")
