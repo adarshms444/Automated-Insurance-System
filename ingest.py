@@ -3,11 +3,7 @@ import google.generativeai as genai
 from pinecone import Pinecone, ServerlessSpec
 import time
 
-# --- CONFIGURATION ---
-# PASTE YOUR KEYS HERE
-GEMINI_API_KEY = "AIzaSyDdQ6-5nu5q_Shw8c-qkiA7tESbWOPNB_U"
-PINECONE_API_KEY = "pcsk_33Qwd9_4tAV4eLWQoeyX2WHKWSNPk816ApLbLY9LfJJwVzMQdLPxPKPJbKw7BafcRnoRMw"
-INDEX_NAME = "suraksha-index"
+
 
 # Configure APIs
 genai.configure(api_key=GEMINI_API_KEY)
@@ -91,4 +87,5 @@ if __name__ == "__main__":
         upload_to_pinecone(docs)
         print("\n🎉 Success! Knowledge Base is updated.")
     else:
+
         print("\n⚠️ No documents found. Check data folder.")
